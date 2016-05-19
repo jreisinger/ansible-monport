@@ -12,7 +12,7 @@
     - gcc
     - libpithub-perl
 
-- name: install ... dot files manager
+- name: clone ... dot files manager
   git: repo=git://github.com/ingydotnet/....git dest=/home/{{ os_user }}/...
 
 - name: configure ...
@@ -33,16 +33,18 @@
 - name: copy script for adding SSH key to GitHub
   template: src=github_add_key.j2 dest=/home/{{ os_user }}/bin/github_add_key mode=0700
 
+- name: set onwership for ~ recursively
+  file: path=/home/{{ os_user }} owner={{ os_user }} group={{ os_user }} recurse=yes
+
 - block:
 
   - name: run script for adding SSH key to GitHub
     command: /home/{{ os_user }}/bin/github_add_key
 
+  - name: upgrade dotfiles
+    command: /home/{{ os_user }}/.../bin/... upgrade
+    tags:
+      - upgrade_dots
+
   become: true
   become_user: "{{ os_user }}"
-
-#- name: Clone my GitHub repos
-#  git:
-
-- name: set onwership for ~ recursively
-  file: path=/home/{{ os_user }} owner={{ os_user }} group={{ os_user }} recurse=yes
