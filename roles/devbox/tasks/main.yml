@@ -11,6 +11,7 @@
     - make
     - gcc
     - libpithub-perl
+    - libssl-dev
 
 - name: clone ... dot files manager
   git: repo=git://github.com/ingydotnet/....git dest=/home/{{ os_user }}/...
@@ -18,8 +19,11 @@
 - name: configure ...
   template: src=conf.j2 dest=/home/{{ os_user }}/.../conf
 
-- name: create ~bin directory
-  file: path=/home/{{ os_user }}/bin state=directory
+- name: create directories in home
+  file: path=/home/{{ os_user }}/{{ item }} state=directory
+  with_items:
+    - bin
+    - github-repos
 
 - name: symlink ... to bin
   file: src=/home/{{ os_user }}/.../bin/... dest=/home/{{ os_user }}/bin/... state=link
@@ -36,15 +40,30 @@
 - name: set onwership for ~ recursively
   file: path=/home/{{ os_user }} owner={{ os_user }} group={{ os_user }} recurse=yes
 
+- name: install GitMeta
+  cpanm: name=GitMeta
+
 - block:
 
   - name: run script for adding SSH key to GitHub
     command: /home/{{ os_user }}/bin/github_add_key
 
-  - name: upgrade dotfiles
+  - name: update and install dotfiles
     command: /home/{{ os_user }}/.../bin/... upgrade
     tags:
-      - upgrade_dots
+      - update_my_env
+
+  - name: install vim stuff
+    command: /home/{{ os_user }}/bin/install_vim_stuff
+    tags:
+      - update_my_env
+
+  - name: clone my GitHub repos
+    command: gitmeta-update git://github.com/jreisinger/gitmeta {{ item.repos }}.gmf ~/{{ item.dir }}
+    with_items:
+      - { repos: 'github-repos', dir: 'github-repos' }
+    tags:
+      - update_my_env
 
   become: true
   become_user: "{{ os_user }}"
