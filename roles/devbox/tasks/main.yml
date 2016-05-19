@@ -13,6 +13,15 @@
     - libpithub-perl
     - libssl-dev
 
+- name: create OS user
+  user: name={{ os_user }} shell=/bin/bash groups=sudo append=yes generate_ssh_key=yes
+
+- name: cp SSH authorized keys to new user's ~/.ssh
+  command: cp -p /home/ubuntu/.ssh/authorized_keys /home/{{ os_user }}/.ssh/
+
+- name: set onwership and mode for ~/.ssh
+  file: path=/home/{{ os_user }}/.ssh owner={{ os_user }} group={{ os_user }} mode=0700
+
 - name: clone ... dot files manager
   git: repo=git://github.com/ingydotnet/....git dest=/home/{{ os_user }}/...
 
@@ -28,12 +37,6 @@
 - name: symlink ... to bin
   file: src=/home/{{ os_user }}/.../bin/... dest=/home/{{ os_user }}/bin/... state=link
 
-- name: create SSH keys in ~/.ssh
-  command: ssh-keygen -t rsa -N "" -f /home/{{ os_user }}/.ssh/id_rsa creates=/home/{{ os_user }}/.ssh/id_rsa
-
-- name: set onwership and mode for ~/.ssh
-  file: path=/home/{{ os_user }}/.ssh owner={{ os_user }} group={{ os_user }} mode=0700
-
 - name: copy script for adding SSH key to GitHub
   template: src=github_add_key.j2 dest=/home/{{ os_user }}/bin/github_add_key mode=0700
 
@@ -41,7 +44,7 @@
   file: path=/home/{{ os_user }} owner={{ os_user }} group={{ os_user }} recurse=yes
 
 - name: install GitMeta
-  cpanm: name=GitMeta
+  cpanm: name=GitMeta notest=True
 
 - block:
 
