@@ -30,10 +30,7 @@
     ## CHECK ME
     os_user: jreisinger
 
-  vars_prompt:
-    - name: "github_token"
-      prompt: "GitHub token"
-      private: yes
+    github_token: "{{ lookup('env','GITHUB_TOKEN') }}"
 
   roles:
     - { role: monport }
