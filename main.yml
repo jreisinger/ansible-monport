@@ -3,12 +3,14 @@
   gather_facts: False
 
   vars:
+
+    ## CHECK ME
     region: eu-west-1
     vpc_id: vpc-3ca45d58
     vpc_subnet_id: subnet-0a81266e
-
     key_pair_name: ansible-monport
     dns_zone: reisingers.org
+
     security_group: web_sg
     iam_role: Web
     iam_policy: Web
@@ -17,9 +19,22 @@
     - { role: aws_ec2_key }
     - { role: aws_group }
     - { role: aws_policy, policy_document: 'files/policies/Web.json' }
+
+    ## CHECK ME
     - { role: aws_ec2, tag_name: monport, instance_type: t2.small }
 
 - hosts: tag_Name_monport
   become: True
+  vars:
+
+    ## CHECK ME
+    os_user: jreisinger
+
+  vars_prompt:
+    - name: "github_token"
+      prompt: "GitHub token"
+      private: yes
+
   roles:
     - { role: monport }
+    - { role: devbox }
