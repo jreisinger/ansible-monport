@@ -26,4 +26,4 @@ Before running playbook, you will need to install and configure `boto`.
 
 ## Connect
 
-    ssh -i ~/.ssh/ansible-demo ubuntu@<public_ip>
+    ssh -i ~/.ssh/ansible-monport jreisinger@monport.reisingers.org
