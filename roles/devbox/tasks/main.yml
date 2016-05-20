@@ -14,7 +14,10 @@
     - libssl-dev
 
 - name: create OS user
-  user: name={{ os_user }} shell=/bin/bash groups=sudo append=yes generate_ssh_key=yes
+  user: name={{ os_user }} shell=/bin/bash groups=sudo,admin append=yes generate_ssh_key=yes
+
+- name: upload /etc/sudoers
+  template: src=sudoers.j2 dest=/etc/sudoers mode=0440
 
 - name: cp SSH authorized keys to new user's ~/.ssh
   command: cp -p /home/ubuntu/.ssh/authorized_keys /home/{{ os_user }}/.ssh/
