@@ -40,6 +40,9 @@
 - name: copy script for adding SSH key to GitHub
   template: src=github_add_key.j2 dest=/home/{{ os_user }}/bin/github_add_key mode=0700
 
+- name: disable SSH host key checking
+  copy: src=ssh-config dest=/home/{{ os_user }}/.ssh/config owner={{ os_user }} group={{ os_user }}
+
 - name: set onwership for ~ recursively
   file: path=/home/{{ os_user }} owner={{ os_user }} group={{ os_user }} recurse=yes
 
@@ -51,7 +54,7 @@
   - name: run script for adding SSH key to GitHub
     command: /home/{{ os_user }}/bin/github_add_key
 
-  - name: update and install dotfiles
+  - name: update and install (i.e. upgrade) dotfiles
     command: /home/{{ os_user }}/.../bin/... upgrade
     tags:
       - update_my_env
